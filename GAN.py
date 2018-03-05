@@ -16,8 +16,10 @@ import numpy as np
 
 from scipy.misc import imsave
 
-image_width = 100
-image_height = 100
+np.random.seed(0)
+
+image_width = 28
+image_height = 28
 nb_of_channels = 1
 
 input_noise_len = 100
@@ -25,25 +27,25 @@ input_noise_len = 100
 def D():
     model = Sequential()
     model.add(InputLayer(batch_input_shape=(None, image_height, image_width, nb_of_channels)))
-    
-    model.add(Conv2D(filters=64, kernel_size=(5,5)))
+#    model.add(BatchNormalization())
+    model.add(Conv2D(filters=32, kernel_size=(2,2)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
     
-    model.add(Conv2D(filters=128, kernel_size=(3,3)))
+    model.add(Conv2D(filters=16, kernel_size=(2,2)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
     
-    model.add(Conv2D(filters=256, kernel_size=(2,2)))
+    model.add(Conv2D(filters=8, kernel_size=(2,2)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
     
     model.add(Flatten())
 
-    model.add(Dense(units=32))
+    model.add(Dense(units=64))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(Dropout(rate=0.2))
@@ -60,8 +62,9 @@ def G():
     model.add(Dense(units=image_width*image_height))
     model.add(BatchNormalization())
     model.add(LeakyReLU())
-    model.add(Reshape(target_shape=(image_height, image_width, 1)))
     model.add(Dropout(0.3))
+    model.add(Reshape(target_shape=(image_height, image_width, 1)))
+ 
     
     model.add(Conv2DTranspose(filters=64, kernel_size=(5,5), padding="same"))
     model.add(BatchNormalization())
@@ -78,9 +81,6 @@ def G():
     model.add(Conv2DTranspose(filters=1, kernel_size=(5,5), padding="same"))
     model.add(Activation('sigmoid'))
 
-    
-    model.compile(optimizer=optimizers.SGD(),
-                  loss='mean_squared_error')
     
     return model
 
@@ -120,7 +120,7 @@ def train_G(train_noise, D, Combined):
 
 #training params
 batch_size = 5
-epoch_size = 200
+epoch_size = 300
 n_epochs = 1000
 save_each = 1
 
