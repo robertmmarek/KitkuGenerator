@@ -33,12 +33,12 @@ def D():
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
     
-    model.add(Conv2D(filters=16, kernel_size=(2,2)))
+    model.add(Conv2D(filters=32, kernel_size=(2,2)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
     
-    model.add(Conv2D(filters=8, kernel_size=(2,2)))
+    model.add(Conv2D(filters=16, kernel_size=(2,2)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
@@ -66,19 +66,19 @@ def G():
     model.add(Reshape(target_shape=(image_height, image_width, 1)))
  
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(5,5), padding="same"))
+    model.add(Conv2DTranspose(filters=64, kernel_size=(2,2), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(5,5), padding="same"))
+    model.add(Conv2DTranspose(filters=64, kernel_size=(2,2), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(5,5), padding="same"))
+    model.add(Conv2DTranspose(filters=64, kernel_size=(2,2), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
-    model.add(Conv2DTranspose(filters=1, kernel_size=(5,5), padding="same"))
+    model.add(Conv2DTranspose(filters=1, kernel_size=(2,2), padding="same"))
     model.add(Activation('sigmoid'))
 
     
