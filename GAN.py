@@ -28,7 +28,7 @@ def D():
     model = Sequential()
     model.add(InputLayer(batch_input_shape=(None, image_height, image_width, nb_of_channels)))
 #    model.add(BatchNormalization())
-    model.add(Conv2D(filters=32, kernel_size=(2,2)))
+    model.add(Conv2D(filters=32, kernel_size=(5,5)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
@@ -51,7 +51,7 @@ def D():
     model.add(Dropout(rate=0.2))
     model.add(Dense(units=1, activation="sigmoid"))
     
-    model.compile(optimizer=optimizers.SGD(),
+    model.compile(optimizer=optimizers.SGD(lr=0.01),
                   loss='binary_crossentropy')
     
     return model
@@ -66,15 +66,15 @@ def G():
     model.add(Reshape(target_shape=(image_height, image_width, 1)))
  
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(2,2), padding="same"))
+    model.add(Conv2DTranspose(filters=64, kernel_size=(6,6), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(2,2), padding="same"))
+    model.add(Conv2DTranspose(filters=64, kernel_size=(4,4), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(2,2), padding="same"))
+    model.add(Conv2DTranspose(filters=128, kernel_size=(2,2), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
@@ -88,7 +88,7 @@ def Combined(D, G):
     model = Sequential()
     model.add(G)
     model.add(D)
-    model.compile(optimizer=optimizers.SGD(),
+    model.compile(optimizer=optimizers.SGD(lr=0.01),
                   loss='binary_crossentropy')
     
     return model
@@ -119,10 +119,12 @@ def train_G(train_noise, D, Combined):
     return training_loss, Combined
 
 #training params
-batch_size = 5
-epoch_size = 300
+batch_size = 10
+epoch_size = 120
 n_epochs = 1000
 save_each = 1
+
+pre_train_iterations = 10
 
 train_path = "./train/"
 out_path = "./out/"
@@ -141,6 +143,12 @@ skip_d_training = False
 dlosst = []
 dlossf = []
 gloss = []
+
+for i in range(pre_train_iterations):
+    for j in range(epoch_size):
+        train_data = train_data_gen.next()[0]
+        train_D_t(train_data, D)
+
 for i in range(n_epochs):
     
     if skip_d_training == False:
