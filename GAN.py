@@ -18,8 +18,8 @@ from scipy.misc import imsave
 
 np.random.seed(0)
 
-image_width = 28
-image_height = 28
+image_width = 100
+image_height = 100
 nb_of_channels = 1
 
 input_noise_len = 100
@@ -120,7 +120,7 @@ def train_G(train_noise, D, Combined):
 
 #training params
 batch_size = 10
-epoch_size = 120
+epoch_size = 60
 n_epochs = 1000
 save_each = 1
 
