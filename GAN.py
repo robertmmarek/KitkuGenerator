@@ -18,9 +18,9 @@ from scipy.misc import imsave
 
 np.random.seed(0)
 
-image_width = 100
-image_height = 100
-nb_of_channels = 1
+image_width = 40
+image_height = 40
+nb_of_channels = 3
 
 input_noise_len = 100
 
@@ -33,12 +33,12 @@ def D():
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
     
-    model.add(Conv2D(filters=32, kernel_size=(2,2)))
+    model.add(Conv2D(filters=64, kernel_size=(2,2)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
     
-    model.add(Conv2D(filters=16, kernel_size=(2,2)))
+    model.add(Conv2D(filters=64, kernel_size=(2,2)))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D())
@@ -66,11 +66,11 @@ def G():
     model.add(Reshape(target_shape=(image_height, image_width, 1)))
  
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(6,6), padding="same"))
+    model.add(Conv2DTranspose(filters=128, kernel_size=(6,6), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
-    model.add(Conv2DTranspose(filters=64, kernel_size=(4,4), padding="same"))
+    model.add(Conv2DTranspose(filters=128, kernel_size=(4,4), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
@@ -78,7 +78,7 @@ def G():
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
-    model.add(Conv2DTranspose(filters=1, kernel_size=(2,2), padding="same"))
+    model.add(Conv2DTranspose(filters=nb_of_channels, kernel_size=(2,2), padding="same"))
     model.add(Activation('sigmoid'))
 
     
@@ -120,7 +120,7 @@ def train_G(train_noise, D, Combined):
 
 #training params
 batch_size = 10
-epoch_size = 60
+epoch_size = 460
 n_epochs = 1000
 save_each = 1
 
@@ -136,7 +136,7 @@ data_gen = DataGenerator()
 train_data_gen = data_gen.flow_from_directory(train_path, 
                                               batch_size=batch_size,
                                               target_size=(image_height, image_width),
-                                              color_mode='grayscale')
+                                              color_mode='rgb')
 record_file = open('log', 'w')
 print("epoch mean_dlosst mean_dlossf mean_gloss", file=record_file)
 skip_d_training = False
@@ -182,7 +182,7 @@ for i in range(n_epochs):
     print("%i %f %f %f" % (i, mean_dlosst, mean_dlossf, mean_gloss), file=record_file)
     if i % save_each == 0:
         pred = G.predict(train_noise)
-        imsave(out_path+"_"+str(i)+".png", pred[0, :, :, 0])
+        imsave(out_path+"_"+str(i)+".png", pred[0, :, :, :])
         G.save_weights('G')
         D.save_weights('D')
    
