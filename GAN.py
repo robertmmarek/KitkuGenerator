@@ -15,6 +15,7 @@ from keras import optimizers
 import numpy as np
 
 from scipy.misc import imsave
+from os import path
 
 np.random.seed(0)
 
@@ -51,6 +52,9 @@ def D():
     model.add(Dropout(rate=0.2))
     model.add(Dense(units=1, activation="sigmoid"))
     
+    if(path.isfile('D')):
+        model.load_weights('D')
+    
     model.compile(optimizer=optimizers.SGD(lr=0.01),
                   loss='binary_crossentropy')
     
@@ -81,7 +85,8 @@ def G():
     model.add(Conv2DTranspose(filters=nb_of_channels, kernel_size=(2,2), padding="same"))
     model.add(Activation('sigmoid'))
 
-    
+    if(path.isfile('G')):
+        model.load_weights('G')
     return model
 
 def Combined(D, G):
@@ -123,11 +128,14 @@ batch_size = 10
 epoch_size = 460
 n_epochs = 1000
 save_each = 1
+start_batch = 81
 
-pre_train_iterations = 10
+#pre_train_iterations = 10
+pre_train_iterations = 0
 
 train_path = "./train/"
 out_path = "./out/"
+
 
 G = G()
 D = D()
@@ -182,7 +190,7 @@ for i in range(n_epochs):
     print("%i %f %f %f" % (i, mean_dlosst, mean_dlossf, mean_gloss), file=record_file)
     if i % save_each == 0:
         pred = G.predict(train_noise)
-        imsave(out_path+"_"+str(i)+".png", pred[0, :, :, :])
+        imsave(out_path+"_"+str(i+start_batch)+".png", pred[0, :, :, :])
         G.save_weights('G')
         D.save_weights('D')
    
