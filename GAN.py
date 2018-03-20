@@ -128,7 +128,7 @@ batch_size = 10
 epoch_size = 460
 n_epochs = 1000
 save_each = 1
-start_batch = 103
+start_batch = 136
 
 #pre_train_iterations = 10
 pre_train_iterations = 0
