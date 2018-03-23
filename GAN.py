@@ -19,8 +19,8 @@ from os import path
 
 np.random.seed(0)
 
-image_width = 40
-image_height = 40
+image_width = 50
+image_height = 50
 nb_of_channels = 3
 
 input_noise_len = 100
@@ -55,7 +55,7 @@ def D():
     if(path.isfile('D')):
         model.load_weights('D')
     
-    model.compile(optimizer=optimizers.SGD(lr=0.01),
+    model.compile(optimizer=optimizers.SGD(lr=0.0001),
                   loss='binary_crossentropy')
     
     return model
@@ -70,7 +70,7 @@ def G():
     model.add(Reshape(target_shape=(image_height, image_width, 1)))
  
     
-    model.add(Conv2DTranspose(filters=128, kernel_size=(6,6), padding="same"))
+    model.add(Conv2DTranspose(filters=128, kernel_size=(8,8), padding="same"))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     
@@ -93,7 +93,7 @@ def Combined(D, G):
     model = Sequential()
     model.add(G)
     model.add(D)
-    model.compile(optimizer=optimizers.SGD(lr=0.01),
+    model.compile(optimizer=optimizers.SGD(lr=0.001),
                   loss='binary_crossentropy')
     
     return model
@@ -125,12 +125,11 @@ def train_G(train_noise, D, Combined):
 
 #training params
 batch_size = 10
-epoch_size = 460
+epoch_size = 200
 n_epochs = 1000
 save_each = 1
-start_batch = 136
+start_batch = 0
 
-#pre_train_iterations = 10
 pre_train_iterations = 0
 
 train_path = "./train/"
